@@ -1,4 +1,4 @@
-package com.foxingarden.FoxInGarden.model;
+package com.foxingarden.FoxInGarden.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
