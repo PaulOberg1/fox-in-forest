@@ -39,11 +39,11 @@ class GameEngineController{
 
     @MessageMapping("/playCard")
     public void playCard(PlayCardMessage playCardMessage) {
-        Deck centralDeck = gameEngineService.playCard(playCardMessage); //playCardMessage contains user id
+        int centralDeckSize = gameEngineService.playCard(playCardMessage); //playCardMessage contains user id
         broadcastUpdate("/broadcast/updateCentralDeck", playCardMessage); //send Central Deck instead of playcardmsg
-        if (centralDeck.length() == 2) {
+        if (centralDeckSize == 2) {
             // Send central deck to service layer, return DTO containing updated scores
-            DetermineWinnerMessage determineWinnerMessage = gameEngineService.determineWinner(centralDeck);
+            DetermineWinnerMessage determineWinnerMessage = gameEngineService.determineWinner();
             broadcastUpdate("broadcast/determineWinnerUpdate", determineWinnerMessage);
             String playerId = determineWinnerMessage.getWinnerId();
             privateUpdate(playerId, "/p2p/selectWinnerUpdate", determineWinnerMessage);
