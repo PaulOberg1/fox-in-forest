@@ -1,6 +1,7 @@
 package com.foxingarden.FoxInGarden.model.domain;
 
 import java.util.List;
+import java.util.Collections;
 
 public class Deck{
 
@@ -36,5 +37,13 @@ public class Deck{
 
     public int length() {
         return cards.size();
+    }
+
+    public Deck extractRandomCards(int n) {
+        if (n>=cards.size())
+            return this;
+        Collections.shuffle(cards);
+        List<Card> randomCards = cards.subList(0, n);
+        return new Deck(randomCards);
     }
 }
