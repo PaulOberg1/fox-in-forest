@@ -1,27 +1,41 @@
 package com.foxingarden.FoxInGarden.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.foxingarden.FoxInGarden.model.entity.User;
-import com.foxingarden.FoxInGarden.service.UserService;
+import com.foxingarden.FoxInGarden.dto.BaseDTO;
+import com.foxingarden.FoxInGarden.service.GameMenuService;
+
+
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 @RestController
-@RequestMapping("/menu")
 class GameMenuController{
 
     @Autowired
-    UserService userService;
+    GameMenuService gameMenuService;
 
-    @PostMapping("/login")
-    public void login(@RequestBody User user) {
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    public void privateUpdate(String userId, String path, BaseDTO dto) {
+        messagingTemplate.convertAndSendToUser(userId, path, dto);
+    }
+    public void privateUpdate(String userId, String path) {
+        messagingTemplate.convertAndSendToUser(userId, path, null);
     }
 
-    @PostMapping("/signup")
-    public void signup(@RequestBody User user) {
+    @MessageMapping("/login")
+    public void login(String username, String password) {
+        long userId = gameMenuService.getUserId(username,password);
+        privateUpdate(String.valueOf(userId),"p2p/loginUpdate");
+    }
+
+    @MessageMapping("/signup")
+    public void signup(String username, String password) {
+        long userId = gameMenuService.createUser(username,password);
+        privateUpdate(String.valueOf(userId),"p2p/signupUpdate");
     }
 }
