@@ -79,7 +79,7 @@ public class Game {
         return totalDeck.extractRandomCards(11);
     }
 
-    public String getOtherPlayer(String playerId) {
+    public String getOtherPlayerId(String playerId) {
         if (playerId == players.get(0).getId()) 
             return players.get(1).getId();
         return players.get(0).getId();
