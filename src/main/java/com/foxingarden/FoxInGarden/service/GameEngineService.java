@@ -33,7 +33,7 @@ public class GameEngineService {
         return new AddPlayerMessage(newPlayer.getDeck());
     }
 
-    public String getOtherPlayer(String playerId) {
+    public String getOtherPlayerId(String playerId) {
         return game.getOtherPlayerId(playerId);
     }
 };
