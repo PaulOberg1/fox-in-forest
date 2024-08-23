@@ -10,6 +10,10 @@ public class Deck{
         this.cards = cards;
     }
 
+    public Card getCard(int i) {
+        return cards.get(i);
+    }
+
     public Card getCard() {
         int size = cards.size();
         int index = (int)Math.floor(Math.random()*size);
@@ -24,5 +28,13 @@ public class Deck{
             }
         }
         return null;
+    }
+
+    public void addCard(Card card) {
+        cards.add(card);
+    }
+
+    public int length() {
+        return cards.size();
     }
 }
