@@ -3,6 +3,7 @@ package com.foxingarden.FoxInGarden.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.foxingarden.FoxInGarden.dto.AuthenticateUserMessage;
 import com.foxingarden.FoxInGarden.dto.BaseDTO;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
 
@@ -28,13 +29,17 @@ class GameMenuController{
     }
 
     @MessageMapping("/login")
-    public void login(String username, String password) {
+    public void login(AuthenticateUserMessage authenticateUserMessage) {
+        String username = authenticateUserMessage.getUsername();
+        String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.getUserId(username,password);
         privateUpdate(String.valueOf(userId),"p2p/loginUpdate");
     }
 
     @MessageMapping("/signup")
-    public void signup(String username, String password) {
+    public void signup(AuthenticateUserMessage authenticateUserMessage) {
+        String username = authenticateUserMessage.getUsername();
+        String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.createUser(username,password);
         privateUpdate(String.valueOf(userId),"p2p/signupUpdate");
     }
