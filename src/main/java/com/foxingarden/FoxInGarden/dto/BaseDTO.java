@@ -6,5 +6,9 @@ import lombok.Getter;
 @Setter
 @Getter
 public abstract class BaseDTO {
-    private String id;
+    protected String clientId;
+
+    public BaseDTO(String clientId) {
+        this.clientId = clientId;
+    }
 }

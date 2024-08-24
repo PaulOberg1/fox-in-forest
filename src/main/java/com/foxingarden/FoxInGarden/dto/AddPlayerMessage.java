@@ -7,10 +7,11 @@ import lombok.Getter;
 
 @Setter
 @Getter
-public class AddPlayerMessage {
+public class AddPlayerMessage extends BaseDTO {
     private Deck deck;
 
-    public AddPlayerMessage(Deck deck) {
+    public AddPlayerMessage(String clientId, Deck deck) {
+        super(clientId);
         this.deck = deck;
     }
 }
