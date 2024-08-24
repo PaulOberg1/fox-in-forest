@@ -14,6 +14,12 @@ public class GameMenuService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    ClientUserMappingService clientUserMappingService;
+
+    @Autowired
+    ClientSessionMappingService clientSessionMappingService;
+
     private User user;
 
     private final ConcurrentHashMap<String,String> clientIdToSessionId = new ConcurrentHashMap<>();
@@ -29,16 +35,25 @@ public class GameMenuService {
         return user.getId();
     }
 
-    public void registerClient(String clientId, String sessionId) {
-        clientIdToSessionId.putIfAbsent(clientId, sessionId);
-    }
-    
     public String getSessionId(String clientId) {
-        return clientIdToSessionId.get(clientId);
+        return clientSessionMappingService.getSessionId(clientId);
+    }
+
+    public long getUserId(String clientId) {
+        return clientUserMappingService.getUserId(clientId);
     }
 
     public void removeClient(String clientId) {
-        clientIdToSessionId.remove(clientId);
+        clientUserMappingService.removeClient(clientId);
+        clientSessionMappingService.removeClient(clientId);
+    }
+
+    public void registerClientSessionMapping(String clientId, String sessionId) {
+        clientSessionMappingService.registerClient(clientId, sessionId);
+    }
+
+    public void registerClientUserMapping(String clientId, long userId) {
+        clientUserMappingService.registerClient(clientId, userId);
     }
 
 

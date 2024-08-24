@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.foxingarden.FoxInGarden.dto.AuthenticateUserMessage;
 import com.foxingarden.FoxInGarden.dto.BaseMessage;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
-import com.foxingarden.FoxInGarden.service.UserMappingService;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
@@ -19,9 +18,6 @@ class GameMenuController{
 
     @Autowired
     GameMenuService gameMenuService;
-
-    @Autowired
-    UserMappingService userMappingService;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -39,7 +35,7 @@ class GameMenuController{
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.getUserId(username,password);
-        userMappingService.registerClient(clientId, userId);
+        gameMenuService.registerClientUserMapping(clientId, userId);
         privateUpdate(clientId,"p2p/loginUpdate");
     }
 
@@ -49,7 +45,7 @@ class GameMenuController{
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.createUser(username,password);
-        userMappingService.registerClient(clientId, userId);
+        gameMenuService.registerClientUserMapping(clientId, userId);
         privateUpdate(clientId,"p2p/signupUpdate");
     }
 
@@ -57,6 +53,6 @@ class GameMenuController{
     public void connect(BaseMessage baseMessage) {
         String clientId = baseMessage.getClientId();
         String sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
-        gameMenuService.registerClient(clientId, sessionId);
+        gameMenuService.registerClientSessionMapping(clientId, sessionId);
     }
 }
