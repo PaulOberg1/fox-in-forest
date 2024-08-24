@@ -3,25 +3,16 @@ package com.foxingarden.FoxInGarden.controller;
 
 
 
-import com.foxingarden.FoxInGarden.dto.BaseDTO;
-import com.foxingarden.FoxInGarden.dto.DetermineWinnerMessage;
+import com.foxingarden.FoxInGarden.dto.BaseMessage;
+import com.foxingarden.FoxInGarden.dto.PlayerDataMessage;
 import com.foxingarden.FoxInGarden.dto.PlayCardMessage;
 import com.foxingarden.FoxInGarden.dto.AddPlayerMessage;
 
-import com.foxingarden.FoxInGarden.model.domain.Deck;
-
 import com.foxingarden.FoxInGarden.service.GameEngineService;
-
-
-
-import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
@@ -35,11 +26,11 @@ class GameEngineController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void broadcastUpdate(String path, BaseDTO dto) {
+    public void broadcastUpdate(String path, BaseMessage dto) {
         messagingTemplate.convertAndSend(path, dto);
     }
 
-    public void privateUpdate(String userId, String path, BaseDTO dto) {
+    public void privateUpdate(String userId, String path, BaseMessage dto) {
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
@@ -48,22 +39,26 @@ class GameEngineController{
 
     @MessageMapping("/playCard")
     public void playCard(PlayCardMessage playCardMessage) {
+        String clientId = playCardMessage.getClientId();
         int centralDeckSize = gameEngineService.playCard(playCardMessage);
-        broadcastUpdate("/broadcast/updateCentralDeck", playCardMessage);
+        broadcastUpdate("/broadcast/centralDeckUpdate", playCardMessage);
         if (centralDeckSize == 2) {
-            DetermineWinnerMessage determineWinnerMessage = gameEngineService.determineWinner();
-            broadcastUpdate("broadcast/determineWinnerUpdate", determineWinnerMessage);
-            String playerId = determineWinnerMessage.getWinnerId();
-            privateUpdate(playerId, "/p2p/transferPlayerUpdate");
+            PlayerDataMessage playerDataMessage = gameEngineService.getPlayerData(clientId);
+            broadcastUpdate("broadcast/updateScores", playerDataMessage);
         }
         else {
-            String nextPlayerId = gameEngineService.getOtherPlayerId(playCardMessage.getPlayerId());
-            privateUpdate(nextPlayerId,"/p2p/transferPlayerUpdate");
+            String nextClientId = gameEngineService.switchPlayerControlFrom(playCardMessage.getPlayerId());
+            privateUpdate(nextClientId,"/p2p/transferPlayerUpdate");
         }
     }
 
     @MessageMapping("/addPlayer")
-    public AddPlayerMessage addPlayer(String playerId) {
-        return gameEngineService.addPlayer(playerId); 
+    public void addPlayer(BaseMessage baseMessage) {
+        String clientId = baseMessage.getClientId();
+        AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(clientId);
+        privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
+        if (addPlayerMessage.getNumPlayers()==2) {
+            privateUpdate(clientId, "/p2p/transferPlayerUpdate");
+        }
     }
 }
