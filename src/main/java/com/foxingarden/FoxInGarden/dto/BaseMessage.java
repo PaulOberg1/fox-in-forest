@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Setter
 @Getter
-public abstract class BaseDTO {
+public class BaseMessage {
     protected String clientId;
 
-    public BaseDTO(String clientId) {
+    public BaseMessage(String clientId) {
         this.clientId = clientId;
     }
 }

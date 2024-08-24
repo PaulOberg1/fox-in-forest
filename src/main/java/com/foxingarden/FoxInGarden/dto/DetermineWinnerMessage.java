@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Setter
 @Getter
-public class DetermineWinnerMessage extends BaseDTO {
+public class DetermineWinnerMessage extends BaseMessage {
     private String winnerId;
     private int Player1Score;
     private int Player2Score;

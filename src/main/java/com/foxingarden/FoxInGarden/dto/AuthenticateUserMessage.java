@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Setter
 @Getter
-public class AuthenticateUserMessage extends BaseDTO {
+public class AuthenticateUserMessage extends BaseMessage {
     private String username;
     private String password;
 
