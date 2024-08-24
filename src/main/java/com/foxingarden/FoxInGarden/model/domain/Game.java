@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.ArrayList;
 
 
-import com.foxingarden.FoxInGarden.dto.DetermineWinnerMessage;
+import com.foxingarden.FoxInGarden.dto.PlayerDataMessage;
 
 import lombok.Getter;
 
@@ -51,23 +51,6 @@ public class Game {
         return player;
     }
 
-    public DetermineWinnerMessage determineWinner(DetermineWinnerMessage determineWinnerMessage) {
-        Player player1 = players.get(0);
-        determineWinnerMessage.setPlayer1Id(player1.getId());
-        determineWinnerMessage.setPlayer1Score(player1.getScore());
-
-        Player player2 = players.get(0);
-        determineWinnerMessage.setPlayer2Id(player2.getId());
-        determineWinnerMessage.setPlayer2Score(player2.getScore());
-
-        if (determineWinnerMessage.getPlayer1Score()>determineWinnerMessage.getPlayer2Score())
-            determineWinnerMessage.setWinnerId(determineWinnerMessage.getPlayer1Id());
-        else
-            determineWinnerMessage.setWinnerId(determineWinnerMessage.getPlayer2Id());
-
-        return determineWinnerMessage;
-    }
-
     public void playCard(String playerId, String suit, int rank) {
         Player player = idToPlayerMap.get(playerId);
         player.playCard(suit, rank);
@@ -79,8 +62,8 @@ public class Game {
         return totalDeck.extractRandomCards(11);
     }
 
-    public String getOtherPlayerId(String playerId) {
-        if (playerId == players.get(0).getId()) 
+    public String switchPlayerControlFrom(String prevPlayerId) {
+        if (prevPlayerId == players.get(0).getId()) 
             return players.get(1).getId();
         return players.get(0).getId();
     }
