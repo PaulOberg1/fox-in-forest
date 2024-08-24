@@ -25,11 +25,4 @@ public class ClientUserMappingService {
         clientIdToUserId.remove(clientId);
         userIdToClientId.remove(userId);
     }
-
-    public void removeClient(long userId) {
-        String clientId = userIdToClientId.get(userId);
-        userIdToClientId.remove(userId);
-        clientIdToUserId.remove(clientId);
-    }
-
 }
