@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxingarden.FoxInGarden.dto.AuthenticateUserMessage;
-import com.foxingarden.FoxInGarden.dto.BaseDTO;
+import com.foxingarden.FoxInGarden.dto.BaseMessage;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
 
 
@@ -27,7 +27,7 @@ class GameMenuController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void privateUpdate(String userId, String path, BaseDTO dto) {
+    public void privateUpdate(String userId, String path, BaseMessage dto) {
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
@@ -51,16 +51,9 @@ class GameMenuController{
     }
 
     @MessageMapping("/connect")
-    public void connect(String payload) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(payload);
-            String clientId = jsonNode.get("clientId").asText();
-            String sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
-            gameMenuService.registerClient(clientId, sessionId);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }   
+    public void connect(BaseMessage baseMessage) {
+        String clientId = baseMessage.getClientId();
+        String sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
+        gameMenuService.registerClient(clientId, sessionId);
     }
 }
