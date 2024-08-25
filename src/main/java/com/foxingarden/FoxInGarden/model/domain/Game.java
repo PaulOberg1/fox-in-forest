@@ -2,15 +2,16 @@ package com.foxingarden.FoxInGarden.model.domain;
 
 import java.util.List;
 import java.util.Map;
+
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
+
 import java.util.ArrayList;
-
-
-import com.foxingarden.FoxInGarden.dto.PlayerDataMessage;
 
 import lombok.Getter;
 
 @Getter
 public class Game {
+    private String id;
     private Deck totalDeck;
     private List<Player> players;
     private int playerTurn;
@@ -18,7 +19,8 @@ public class Game {
     private Map<String,Card> centralDeck;
     private Map<String,Player> idToPlayerMap;
 
-    public Game (List<Player> players, int playerTurn) {
+    public Game (String id, List<Player> players, int playerTurn) {
+        this.id = id;
         this.totalDeck = generateTotalDeck();
         this.players = players;
         this.playerTurn = playerTurn;
@@ -26,6 +28,21 @@ public class Game {
         for (Player player : players) {
             idToPlayerMap.put(player.getId(),player);
         }
+    }
+
+    public CentralDeckMessage getCentralDeckState(String clientId) {
+        ArrayList<String> playerIds = new ArrayList<>();
+        ArrayList<String> cardSuits = new ArrayList<>();
+        ArrayList<Integer> cardRanks = new ArrayList<>();
+
+        for (Player player : players) {
+            playerIds.add(player.getId());
+            
+            Card card = centralDeck.get(player.getId());
+            cardSuits.add(card.getSuit());
+            cardRanks.add(card.getRank());
+        }
+       return new CentralDeckMessage(clientId, id, playerIds, cardSuits, cardRanks);
     }
 
     public Deck generateTotalDeck() {
