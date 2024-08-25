@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.foxingarden.FoxInGarden.dto.AuthenticateUserMessage;
-import com.foxingarden.FoxInGarden.dto.BaseMessage;
+import com.foxingarden.FoxInGarden.dto.game_menu_dtos.AuthenticateUserMessage;
+import com.foxingarden.FoxInGarden.dto.game_menu_dtos.BaseMenuMessage;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
 import com.foxingarden.FoxInGarden.service.UserService;
 
@@ -26,7 +26,7 @@ class GameMenuController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void privateUpdate(String userId, String path, BaseMessage dto) {
+    public void privateUpdate(String userId, String path, BaseMenuMessage dto) {
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
@@ -54,9 +54,10 @@ class GameMenuController{
     }
 
     @MessageMapping("/connect")
-    public void connect(BaseMessage baseMessage) {
+    public void connect(BaseMenuMessage baseMessage) {
         String clientId = baseMessage.getClientId();
         String sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
         gameMenuService.registerClientSessionMapping(clientId, sessionId);
+        privateUpdate(clientId, "/p2p/verifyConnect");
     }
 }
