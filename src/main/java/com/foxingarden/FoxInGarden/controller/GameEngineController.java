@@ -3,11 +3,11 @@ package com.foxingarden.FoxInGarden.controller;
 
 
 
-import com.foxingarden.FoxInGarden.dto.BaseMessage;
-import com.foxingarden.FoxInGarden.dto.PlayerDataMessage;
-import com.foxingarden.FoxInGarden.dto.PlayCardMessage;
-import com.foxingarden.FoxInGarden.dto.AddPlayerMessage;
-
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AddPlayerMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.BaseEngineMessage;
 import com.foxingarden.FoxInGarden.service.GameEngineService;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -26,11 +26,11 @@ class GameEngineController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void broadcastUpdate(String path, BaseMessage dto) {
+    public void broadcastUpdate(String path, BaseEngineMessage dto) {
         messagingTemplate.convertAndSend(path, dto);
     }
 
-    public void privateUpdate(String userId, String path, BaseMessage dto) {
+    public void privateUpdate(String userId, String path, BaseEngineMessage dto) {
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
@@ -40,22 +40,25 @@ class GameEngineController{
     @MessageMapping("/playCard")
     public void playCard(PlayCardMessage playCardMessage) {
         String clientId = playCardMessage.getClientId();
-        int centralDeckSize = gameEngineService.playCard(playCardMessage);
-        broadcastUpdate("/broadcast/centralDeckUpdate", playCardMessage);
-        if (centralDeckSize == 2) {
-            PlayerDataMessage playerDataMessage = gameEngineService.getPlayerData(clientId);
-            broadcastUpdate("broadcast/updateScores", playerDataMessage);
+        String gameId = playCardMessage.getGameId();
+        CentralDeckMessage centralDeckMessage = gameEngineService.playCard(playCardMessage);
+        broadcastUpdate("/broadcast/{game_id}/centralDeckUpdate", centralDeckMessage);
+
+        CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId));
+
+        if (curGameStatusMessage.isEnded()) {
+            broadcastUpdate("/{game_id}/endGame", curGameStatusMessage);
         }
         else {
-            String nextClientId = gameEngineService.switchPlayerControlFrom(playCardMessage.getClientId());
-            privateUpdate(nextClientId,"/p2p/transferPlayerUpdate");
+            String newClientId = curGameStatusMessage.getCurPlayer().getId();
+            privateUpdate("/p2p/playerControlUpdate", newClientId, new BaseEngineMessage(newClientId, gameId));
         }
     }
 
     @MessageMapping("/addPlayer")
-    public void addPlayer(BaseMessage baseMessage) {
-        String clientId = baseMessage.getClientId();
-        AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(clientId);
+    public void addPlayer(BaseEngineMessage baseEngineMessage) {
+        AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(baseEngineMessage);
+        String clientId = baseEngineMessage.getClientId();
         privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
         if (addPlayerMessage.getNumPlayers()==2) {
             privateUpdate(clientId, "/p2p/transferPlayerUpdate");
