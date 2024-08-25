@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
-import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
 
-import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 
 import lombok.Getter;
@@ -17,6 +15,7 @@ public class Game {
     private String id;
     private Deck totalDeck;
     private ConcurrentHashMap<String,Card> centralCards = new ConcurrentHashMap<>();
+    private Player curPlayer;
 
     public Game (String id) {
         this.id = id;
@@ -46,6 +45,7 @@ public class Game {
 
     public void playCard(Player player, String suit, int rank) {
         player.playCard(suit, rank);
+        curPlayer=player;
         centralCards.put(player.getId(), new Card(suit, rank));
     }
 
@@ -65,6 +65,8 @@ public class Game {
         return new CentralDeckMessage(clientId, id, playerIds, cardSuits, cardRanks);
     }
 
-
+    public boolean isEnded() {
+        return totalDeck.length()==0;
+    }
 
 }
