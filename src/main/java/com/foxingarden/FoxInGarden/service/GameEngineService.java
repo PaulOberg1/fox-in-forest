@@ -10,6 +10,7 @@ import com.foxingarden.FoxInGarden.dto.game_engine_dtos.BaseEngineMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayerDataMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
 import com.foxingarden.FoxInGarden.model.domain.GameSession;
 import com.foxingarden.FoxInGarden.model.domain.Game;
 import com.foxingarden.FoxInGarden.model.domain.Player;
@@ -42,6 +43,9 @@ public class GameEngineService {
         Player player = gameSession.getPlayerById(clientId);
         game.playCard(player, suit, rank);
 
+        Player nextPlayer = gameSession.getOtherPlayerById(clientId);
+        game.setCurPlayer(nextPlayer);
+
         return game.getCentralDeckState(clientId);
     }
 
@@ -57,12 +61,14 @@ public class GameEngineService {
         return new AddPlayerMessage(clientId,gameId,player.getDeck(),numPlayers); 
     }
 
-    public String switchPlayerControl(BaseEngineMessage baseEngineMessage) {
+    public CurGameStatusMessage getCurGameStatus(BaseEngineMessage baseEngineMessage) {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();
         GameSession gameSession = sessions.get(gameId);
         Game game = gameSession.getGame();
-        
-        return game.switchPlayerControlFrom(clientId);
+
+        return new CurGameStatusMessage(clientId, gameId, game.isEnded(), game.getCurPlayer());
+
+
     }
 };
