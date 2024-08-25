@@ -25,7 +25,7 @@ public class GameEngineService {
     }
 
     public int playCard(PlayCardMessage playCardMessage) {
-        String playerId = playCardMessage.getPlayerId();
+        String playerId = playCardMessage.getClientId();
         String suit = playCardMessage.getSuit();
         int rank = playCardMessage.getRank();
 

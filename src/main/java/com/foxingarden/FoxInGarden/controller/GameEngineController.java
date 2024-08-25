@@ -47,7 +47,7 @@ class GameEngineController{
             broadcastUpdate("broadcast/updateScores", playerDataMessage);
         }
         else {
-            String nextClientId = gameEngineService.switchPlayerControlFrom(playCardMessage.getPlayerId());
+            String nextClientId = gameEngineService.switchPlayerControlFrom(playCardMessage.getClientId());
             privateUpdate(nextClientId,"/p2p/transferPlayerUpdate");
         }
     }
