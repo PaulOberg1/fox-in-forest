@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.foxingarden.FoxInGarden.dto.AuthenticateUserMessage;
 import com.foxingarden.FoxInGarden.dto.BaseMessage;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
+import com.foxingarden.FoxInGarden.service.UserService;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
@@ -18,6 +19,9 @@ class GameMenuController{
 
     @Autowired
     GameMenuService gameMenuService;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -34,7 +38,7 @@ class GameMenuController{
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
-        long userId = gameMenuService.getUserId(username,password);
+        long userId = userService.getUserId(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
         privateUpdate(clientId,"p2p/homeScreen");
     }
@@ -44,7 +48,7 @@ class GameMenuController{
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
-        long userId = gameMenuService.createUser(username,password);
+        long userId = userService.createUser(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
         privateUpdate(clientId,"p2p/homeScreen");
     }
