@@ -11,6 +11,7 @@ import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayerDataMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.EndGameMessage;
 import com.foxingarden.FoxInGarden.model.domain.GameSession;
 import com.foxingarden.FoxInGarden.model.domain.Game;
 import com.foxingarden.FoxInGarden.model.domain.Player;
@@ -68,6 +69,15 @@ public class GameEngineService {
         Game game = gameSession.getGame();
 
         return new CurGameStatusMessage(clientId, gameId, game.isEnded(), game.getCurPlayer());
+    }
+
+    public EndGameMessage endGame(BaseEngineMessage baseEngineMessage) {
+        String clientId = baseEngineMessage.getClientId();
+        String gameId = baseEngineMessage.getGameId();
+        GameSession gameSession = sessions.get(gameId);
+        Game game = gameSession.getGame();
+        
+        return game.endGame(clientId,gameSession.getPlayers());
 
 
     }
