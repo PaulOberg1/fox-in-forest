@@ -30,4 +30,14 @@ public class GameSession {
         return new ArrayList<>(idToPlayerMap.values());
     }
 
+    public Player getOtherPlayerById(String playerId) {
+        ArrayList<String> playerIds = new ArrayList<>(idToPlayerMap.keySet());
+        String otherPlayerId;
+        if (playerIds.get(0)==playerId) 
+            otherPlayerId = playerIds.get(1);
+        else 
+            otherPlayerId = playerIds.get(0);
+        return idToPlayerMap.get(otherPlayerId);
+    }
+
 }

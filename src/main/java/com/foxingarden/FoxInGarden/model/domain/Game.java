@@ -1,6 +1,5 @@
 package com.foxingarden.FoxInGarden.model.domain;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,9 +42,12 @@ public class Game {
         return curDeck;
     }
 
+    public void setCurPlayer(Player player) {
+        curPlayer = player;
+    }
+
     public void playCard(Player player, String suit, int rank) {
         player.playCard(suit, rank);
-        curPlayer=player;
         centralCards.put(player.getId(), new Card(suit, rank));
     }
 
