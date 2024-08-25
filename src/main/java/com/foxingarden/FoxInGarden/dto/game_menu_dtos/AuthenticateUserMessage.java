@@ -1,11 +1,11 @@
-package com.foxingarden.FoxInGarden.dto;
+package com.foxingarden.FoxInGarden.dto.game_menu_dtos;
 
 import lombok.Setter;
 import lombok.Getter;
 
 @Setter
 @Getter
-public class AuthenticateUserMessage extends BaseMessage {
+public class AuthenticateUserMessage extends BaseMenuMessage {
     private String username;
     private String password;
 
