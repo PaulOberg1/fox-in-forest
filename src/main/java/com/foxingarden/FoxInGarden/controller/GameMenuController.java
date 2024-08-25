@@ -36,7 +36,7 @@ class GameMenuController{
         String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.getUserId(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"p2p/loginUpdate");
+        privateUpdate(clientId,"p2p/homeScreen");
     }
 
     @MessageMapping("/signup")
@@ -46,7 +46,7 @@ class GameMenuController{
         String password = authenticateUserMessage.getPassword();
         long userId = gameMenuService.createUser(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"p2p/signupUpdate");
+        privateUpdate(clientId,"p2p/homeScreen");
     }
 
     @MessageMapping("/connect")
