@@ -11,6 +11,7 @@ public class GameSession {
     private Game game;
 
     private Map<String,Player> idToPlayerMap;
+    private ArrayList<Player> players;
 
     public GameSession(String id, Game game) {
         this.id = id;
@@ -31,13 +32,12 @@ public class GameSession {
     }
 
     public Player getOtherPlayerById(String playerId) {
-        ArrayList<String> playerIds = new ArrayList<>(idToPlayerMap.keySet());
-        String otherPlayerId;
-        if (playerIds.get(0)==playerId) 
-            otherPlayerId = playerIds.get(1);
+        Player otherPlayer;
+        if (players.get(0).getId()==playerId) 
+            otherPlayer = players.get(1);
         else 
-            otherPlayerId = playerIds.get(0);
-        return idToPlayerMap.get(otherPlayerId);
+            otherPlayer = players.get(0);
+        return otherPlayer;
     }
 
 }
