@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.EndGameMessage;
 
 import java.util.ArrayList;
 
@@ -69,6 +70,32 @@ public class Game {
 
     public boolean isEnded() {
         return totalDeck.length()==0;
+    }
+
+    public EndGameMessage endGame(String clientId, ArrayList<Player> players) {
+        Player player1 = players.get(0);
+        int player1Points = computePointsFromScore(player1.getScore());
+
+        Player player2 = players.get(1);
+        int player2Points = computePointsFromScore(player2.getScore());
+
+        return new EndGameMessage(clientId, id, player1.getId(), player2.getId(), player1Points, player2Points);
+
+    }
+
+    public int computePointsFromScore(int score) {
+        if (score<=3)
+            return 6;
+        else if (score==4)
+            return 1;
+        else if (score==5)
+            return 2;
+        else if (score==6)
+            return 3;
+        else if (score<=9)
+            return 6;
+        else
+            return 0;
     }
 
 }
