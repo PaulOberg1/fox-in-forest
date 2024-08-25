@@ -48,10 +48,9 @@ stompClient.connect({}, function (frame) {
         */
     })
 
-    stompClient.subscribe("/broadcast/{game_id}/playerControlUpdate", function (message) {
+    stompClient.subscribe("/p2p/playerControlUpdate", function (message) {
         /*
-            object returned from backend storing client id of player whose turn is next
-            compare this id with our clientId attribute, if matching then our player's turn
+            indicates our player can play
             enable calls to playCard(suit,rank) if specific card selected
         */
     })
