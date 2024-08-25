@@ -6,6 +6,7 @@ package com.foxingarden.FoxInGarden.controller;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AddPlayerMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.EndGameMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.BaseEngineMessage;
 import com.foxingarden.FoxInGarden.service.GameEngineService;
@@ -47,7 +48,8 @@ class GameEngineController{
         CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId));
 
         if (curGameStatusMessage.isEnded()) {
-            broadcastUpdate("/{game_id}/endGame", curGameStatusMessage);
+            EndGameMessage endGameMessage = gameEngineService.endGame(new BaseEngineMessage(clientId, gameId));
+            broadcastUpdate("/{game_id}/endGame", endGameMessage);
         }
         else {
             String newClientId = curGameStatusMessage.getCurPlayer().getId();
