@@ -2,6 +2,9 @@ package com.foxingarden.FoxInGarden.service;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class ClientSessionMappingService {
     
     private final ConcurrentHashMap<String,String> clientIdToSessionId = new ConcurrentHashMap<>();
