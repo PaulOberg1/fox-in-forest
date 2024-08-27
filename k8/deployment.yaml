@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: FoxInGarden-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: FoxInGarden
+  template:
+    metadata:
+      labels:
+        app: FoxInGarden
+    spec:
+      containers:
+      - name: FoxInGarden
+        image: FoxInGarden:latest
+        ports:
+        - containerPort: 8080
