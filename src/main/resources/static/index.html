@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Fox In Garden</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.3.0/bundles/stomp.umd.min.js"></script>
+<script src="script.js"></script>
+<body>
+
+
+<div id="loginForm" class="form-container hidden">
+ <h2>Login</h2>
+ <input type="text" id="loginUsername" placeholder="username" required>
+ <input type="password" id="loginPassword" placeholder="password" required>
+ <button onclick="login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value)">Login</button>
+ <span class="toggle-link" onclick="toggleForms()">Don't have an account? Sign up</span>
+</div>
+
+<div id="signupForm" class="form-container hidden">
+ <h2>Sign Up</h2>
+ <input type="text" id="signupUsername" placeholder="username" required>
+ <input type="password" id="signupPassword" placeholder="password" required>
+ <button onclick="signup(document.getElementById('signupUsername').value, document.getElementById('signupPassword').value)">Sign Up</button>
+ <span class="toggle-link" onclick="toggleForms()">Already have an account? Log in</span>
+</div>
+
+
+<div id="homePage" class="hidden">
+ <div id="joinForm" class="form-container">
+  <h2>Join A Game</h2>
+  <input type="text" id="gameId" placeholder="gameId" required>
+  <button onclick="joinGame(document.getElementById('gameId').value)">Join Game</button>
+ </div>
+
+ <div id="newGame" style="text-align: center; margin-top: 20px;">
+  <h2>New Game</h2>
+  <button onclick="newGame()">New Game</button>
+ </div>
+</div>
+
+ 
+</body>
+</html>

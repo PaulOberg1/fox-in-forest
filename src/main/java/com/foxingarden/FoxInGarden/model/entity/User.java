@@ -28,6 +28,8 @@ public class User {
     @NotEmpty(message = "user password required")
     private String password;
 
+    public User() {}
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;

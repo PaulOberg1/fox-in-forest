@@ -30,7 +30,7 @@ class GameMenuController{
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
-        messagingTemplate.convertAndSendToUser(userId, path, null);
+        messagingTemplate.convertAndSendToUser(userId, path, "{}");
     }
 
     @MessageMapping("/login")
@@ -40,7 +40,7 @@ class GameMenuController{
         String password = authenticateUserMessage.getPassword();
         long userId = userService.getUserId(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"p2p/homeScreen");
+        privateUpdate(clientId,"/p2p/homePage");
     }
 
     @MessageMapping("/signup")
@@ -50,7 +50,7 @@ class GameMenuController{
         String password = authenticateUserMessage.getPassword();
         long userId = userService.createUser(username,password);
         gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"p2p/homeScreen");
+        privateUpdate(clientId,"/p2p/homePage");
     }
 
     @MessageMapping("/connect")
