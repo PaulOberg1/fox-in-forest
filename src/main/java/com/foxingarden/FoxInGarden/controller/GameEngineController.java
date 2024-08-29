@@ -35,7 +35,7 @@ class GameEngineController{
         messagingTemplate.convertAndSendToUser(userId, path, dto);
     }
     public void privateUpdate(String userId, String path) {
-        messagingTemplate.convertAndSendToUser(userId, path, null);
+        messagingTemplate.convertAndSendToUser(userId, path, "{}");
     }
 
     @MessageMapping("/playCard")
