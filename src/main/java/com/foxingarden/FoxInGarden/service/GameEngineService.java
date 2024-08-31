@@ -1,5 +1,6 @@
 package com.foxingarden.FoxInGarden.service;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,14 @@ public class GameEngineService {
         GameSession gameSession = sessions.get(gameId);
         Game game = gameSession.getGame();
 
-        return new CurGameStatusMessage(clientId, gameId, game.isEnded(gameSession.getPlayers()), game.getCurPlayer());
+        ArrayList<String> userIds = new ArrayList<>();
+        ArrayList<Integer> numPlayerCards = new ArrayList<>();
+        for (Player player: gameSession.getPlayers()) {
+            userIds.add(player.getId());
+            numPlayerCards.add(player.getDeck().length());
+        }
+
+        return new CurGameStatusMessage(clientId, gameId, game.isEnded(gameSession.getPlayers()), game.getCurPlayer(), userIds, numPlayerCards);
     }
 
     public EndGameMessage endGame(BaseEngineMessage baseEngineMessage) {

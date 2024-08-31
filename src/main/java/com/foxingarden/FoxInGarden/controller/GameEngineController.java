@@ -44,8 +44,9 @@ class GameEngineController{
         String gameId = playCardMessage.getGameId();
         CentralDeckMessage centralDeckMessage = gameEngineService.playCard(playCardMessage);
         broadcastUpdate("/broadcast/" + gameId + "/centralDeckUpdate", centralDeckMessage);
-
+        
         CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId)); //if this message is not sent to the client maybe it would be more efficient to return something else as the curGameStatus
+        broadcastUpdate("/broadcast/" + gameId + "/gameStatusUpdate", curGameStatusMessage);
 
         if (curGameStatusMessage.isEnded()) {
             EndGameMessage endGameMessage = gameEngineService.endGame(new BaseEngineMessage(clientId, gameId));
@@ -62,9 +63,7 @@ class GameEngineController{
         AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(baseEngineMessage); //catch exception gameId does not exist
         String clientId = baseEngineMessage.getClientId();
         privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
-        if (addPlayerMessage.getNumPlayers()==2) { //this should always equal 2?
-            privateUpdate(clientId, "/p2p/playerControlUpdate");
-        }
+        privateUpdate(clientId, "/p2p/playerControlUpdate");
     }
 
     @MessageMapping("/newGame")
