@@ -1,5 +1,5 @@
 .hidden {
-  display: none;
+display: none;
 }
 
 .form-container {
@@ -48,3 +48,38 @@ cursor: pointer;
 color: #007bff;
 }
 
+.selected {
+border: 2px solid blue;
+opacity: 0.8;
+}
+
+#centralDeck {
+display: flex;
+justify-content: space-between;
+padding: 20px;
+margin-top: 20px;
+background-color: #f8f8f8;
+}
+
+.player-section {
+width: 45%;
+}
+
+.player-section h4 {
+text-align: center;
+margin-bottom: 10px;
+}
+
+.player-cards {
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+gap: 8px;
+}
+
+.player-cards img {
+margin: 0 8px;
+cursor: pointer;
+width: 50px; /* Adjust as needed */
+height: 70px; /* Adjust as needed */
+}

@@ -21,7 +21,10 @@ function toggleForms() {
     document.getElementById('signupForm').classList.toggle('hidden');
 }
 
-var clientId = generateId(); //Sent with every request to uniquely identify sender
+let clientId = generateId(); //Sent with every request to uniquely identify sender
+let gameId = null;
+let cardList = [];
+let selectedCardIndex = null;
 
 stompClient.onConnect = function (frame) {    
     stompClient.subscribe(`/user/${clientId}/p2p/homePage`, function (message) {
@@ -47,25 +50,40 @@ stompClient.onConnect = function (frame) {
     });
 
 
-    stompClient.subscribe(`/user/${clientId}/p2p/${gameId}/loadGame`, function (message) {
+    stompClient.subscribe(`/user/${clientId}/p2p/addPlayerUpdate`, function (message) {
         /*
             new game has been started, player loaded in, display the game
             player cannot do anything yet
         */
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('gameIdDisplay').innerText = `Game ID: ${gameId}`
+        newSubscriptions();
+        cardList = JSON.parse(message.body).cardList;
+        displayCards();
     });
-
-    stompClient.subscribe(`/broadcast/${gameId}/centralDeckUpdate`, function (message) {
-        /*
-            CentralDeckMessage DTO object returned
-            update the display of the central deck to display these cards
-        */
-    })
-
+    
     stompClient.subscribe(`/user/${clientId}/p2p/playerControlUpdate`, function (message) {
         /*
             indicates our player can play
             enable calls to playCard(suit,rank) if specific card selected
         */
+        document.getElementById('playButton').classList.remove('hidden');
+    })
+    connect();
+};
+
+function newSubscriptions() {
+    stompClient.subscribe(`/broadcast/${gameId}/centralDeckUpdate`, function (message) {
+        /*
+            CentralDeckMessage DTO object returned
+            update the display of the central deck to display these cards
+        */
+        document.getElementById('centralDeck').classList.remove('hidden');
+        const data = JSON.parse(message.body);
+        playerIds = data.playerIds;
+        cardSuits = data.cardSuits;
+        cardRanks = data.cardRanks;
+        groupAndDisplayCards(playerIds, cardSuits, cardRanks);
     })
 
     stompClient.subscribe(`/broadcast/${gameId}/endGame`, function (message) {
@@ -73,8 +91,90 @@ stompClient.onConnect = function (frame) {
             object returned from backend storing final score, display this
         */
     })
-    connect();
-};
+}
+
+function displayCards() {
+    const cardDisplay = document.getElementById('cardDisplay');
+    cardDisplay.innerHTML = ''; //clear previous cards
+
+    cardList.forEach((card, index) => {
+        const cardElement = document.createElement('img');
+        cardElement.src = 'path/to/card/image.png'; //image path goes here
+        cardElement.alt = `${card.suit} ${card.rank}`;
+        cardElement.style = 'margin: 0 10px; cursor: pointer;';
+
+        cardElement.onclick = function() {
+            selectCard(index);
+        };
+
+        cardDisplay.appendChild(cardElement);
+    });
+
+    document.getElementById('gameContainer').classList.remove('hidden');
+}
+
+function selectCard(index) {
+    //deselect any selected card
+    if (selectedCardIndex !== null) {
+        document.querySelector(`#cardDisplay img.selected`).classList.remove('selected');
+    }
+
+    selectedCardIndex = index;
+
+    const selectedCardElement = document.querySelectorAll('#cardDisplay img')[index];
+    selectedCardElement.classList.add('selected');
+
+    console.log(`Selected card: ${cardList[index].suit} ${cardList[index].rank}`);
+}
+
+function playSelectedCard() {
+    if (selectedCardIndex !== null) {
+        const selectedCard = cardList[selectedCardIndex];
+        playCard(selectedCard.suit, selectedCard.rank);
+        cardList.splice(selectedCardIndex, 1);//remove selected card
+        displayCards(); //refresh display
+        selectedCardIndex = null;
+        document.getElementById('playButton').classList.add('hidden');
+    } else {
+        alert('Please select a card to play.');
+    }
+}
+
+function groupAndDisplayCards(playerIds, cardSuits, cardRanks) {
+    const groupedCards = [];
+
+    playerIds.forEach((playerId, index) => {
+        const card = {
+            suit: cardSuits[index],
+            rank: cardRanks[index]
+        };
+
+        //try to find existing playerId in groupedCards
+        let playerGroup = groupedCards.find(group => group.playerId === playerId);
+
+        if (!playerGroup) {
+            playerGroup = { playerId: playerId, cards: [] };
+            groupedCards.push(playerGroup);
+        }
+
+        playerGroup.cards.push(card);
+    });
+
+    //clear previous cards
+    document.getElementById('player1').innerHTML = '';
+    document.getElementById('player2').innerHTML = '';
+
+    groupedCards.slice(0, 2).forEach((group, index) => {
+        const playerSection = document.getElementById(`player${index + 1}`);
+        group.cards.forEach(card => {
+            const centralCard = document.createElement('img');
+            centralCard.src = 'path/to/card/image.png'; //image path goes here
+            centralCard.alt = `${card.suit} ${card.rank}`;
+            centralCard.style = 'margin: 0 8px; cursor: pointer;';
+            playerSection.appendChild(centralCard);
+        });
+    });
+}
 
 stompClient.onStompError = function (frame) {
     console.error('Broker reported error: ' + frame.headers['message']);
@@ -104,17 +204,20 @@ function signup(username,password) {
 function joinGame(gameIdTemp) {
     gameId = gameIdTemp;
     stompClient.publish({
-        destination: "/app/joinGame",
+        destination: "/app/addPlayer",
         body: JSON.stringify({clientId:clientId,gameId:gameId})
     }) //wil result in call to /p2p/loadGame
 }
 function newGame() {
-    joinGame(generateId()); //wil result in call to /p2p/loadGame
+    gameId = generateId();
+    stompClient.publish({
+        destination: "/app/newGame",
+        body: JSON.stringify({clientId:clientId,gameId:gameId})
+    }) //wil result in call to /p2p/loadGame
 }
 function playCard(suit,rank) {
     stompClient.publish({
         destination: "/app/playCard",
-        body: JSON.stringify({clientId:clientId,suit:suit,rank:rank})
+        body: JSON.stringify({clientId:clientId,gameId:gameId,suit:suit,rank:rank})
     }) //will result in call to broadcast/centralDeckUpdate, and broadcast/updatePlayerScores
 }
-

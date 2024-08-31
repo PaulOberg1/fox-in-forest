@@ -17,8 +17,12 @@ public class Player {
         this.currentCardPlayed = null;
         this.score=0;
     }
-    public void playCard(String suit, int rank) {
+    public boolean playCard(String suit, int rank) {
         currentCardPlayed = deck.playCard(suit,rank);
+        if (currentCardPlayed != null) {
+            return true;
+        }
+        return false;
     }
     public void updateScore() {
         this.score++;

@@ -43,27 +43,34 @@ class GameEngineController{
         String clientId = playCardMessage.getClientId();
         String gameId = playCardMessage.getGameId();
         CentralDeckMessage centralDeckMessage = gameEngineService.playCard(playCardMessage);
-        broadcastUpdate("/broadcast/{game_id}/centralDeckUpdate", centralDeckMessage);
+        broadcastUpdate("/broadcast/" + gameId + "/centralDeckUpdate", centralDeckMessage);
 
-        CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId));
+        CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId)); //if this message is not sent to the client maybe it would be more efficient to return something else as the curGameStatus
 
         if (curGameStatusMessage.isEnded()) {
             EndGameMessage endGameMessage = gameEngineService.endGame(new BaseEngineMessage(clientId, gameId));
-            broadcastUpdate("/{game_id}/endGame", endGameMessage);
+            broadcastUpdate("/broadcast/" + gameId + "/endGame", endGameMessage);
         }
         else {
             String newClientId = curGameStatusMessage.getCurPlayer().getId();
-            privateUpdate("/p2p/playerControlUpdate", newClientId, new BaseEngineMessage(newClientId, gameId));
+            privateUpdate(newClientId, "/p2p/playerControlUpdate");
         }
     }
 
     @MessageMapping("/addPlayer")
     public void addPlayer(BaseEngineMessage baseEngineMessage) {
-        AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(baseEngineMessage);
+        AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(baseEngineMessage); //catch exception gameId does not exist
         String clientId = baseEngineMessage.getClientId();
         privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
-        if (addPlayerMessage.getNumPlayers()==2) {
-            privateUpdate(clientId, "/p2p/transferPlayerUpdate");
+        if (addPlayerMessage.getNumPlayers()==2) { //this should always equal 2?
+            privateUpdate(clientId, "/p2p/playerControlUpdate");
         }
+    }
+
+    @MessageMapping("/newGame")
+    public void newGame(BaseEngineMessage baseEngineMessage) {
+        AddPlayerMessage addPlayerMessage = gameEngineService.newGame(baseEngineMessage); //catch exception gameId already exists?
+        String clientId = baseEngineMessage.getClientId();
+        privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
     }
 }
