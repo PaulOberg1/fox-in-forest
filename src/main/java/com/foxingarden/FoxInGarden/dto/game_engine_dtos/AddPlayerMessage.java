@@ -1,6 +1,7 @@
 package com.foxingarden.FoxInGarden.dto.game_engine_dtos;
 
-import com.foxingarden.FoxInGarden.model.domain.Deck;
+import com.foxingarden.FoxInGarden.model.domain.Card;
+import java.util.List;
 
 import lombok.Setter;
 import lombok.Getter;
@@ -8,12 +9,12 @@ import lombok.Getter;
 @Setter
 @Getter
 public class AddPlayerMessage extends BaseEngineMessage {
-    private Deck deck;
+    private List<Card> cardList;
     private int numPlayers;
 
-    public AddPlayerMessage(String clientId, String gameId, Deck deck, int numPlayers) {
+    public AddPlayerMessage(String clientId, String gameId, List<Card> cardList, int numPlayers) {
         super(clientId,gameId);
-        this.deck = deck;
+        this.cardList = cardList;
         this.numPlayers = numPlayers;
     }
 }
