@@ -14,7 +14,7 @@ import lombok.Getter;
 public class Game {
     private String id;
     private Deck totalDeck;
-    private ConcurrentHashMap<String,Card> centralCards = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Card,String> centralCards = new ConcurrentHashMap<>();
     private Player curPlayer;
 
     public Game (String id) {
@@ -48,8 +48,9 @@ public class Game {
     }
 
     public void playCard(Player player, String suit, int rank) {
-        player.playCard(suit, rank);
-        centralCards.put(player.getId(), new Card(suit, rank));
+        if (player.getId().equals(curPlayer.getId()) && player.playCard(suit, rank)) {
+            centralCards.put(new Card(suit,rank), player.getId());
+        }
     }
 
     public CentralDeckMessage getCentralDeckState(String clientId) {
@@ -57,10 +58,10 @@ public class Game {
         ArrayList<String> cardSuits = new ArrayList<>();
         ArrayList<Integer> cardRanks = new ArrayList<>();
 
-        for (Map.Entry<String,Card> entry : centralCards.entrySet()) {
-            String playerId = entry.getKey();
-            Card card = entry.getValue();
-            
+        for (Map.Entry<Card,String> entry : centralCards.entrySet()) {
+            Card card = entry.getKey();
+            String playerId = entry.getValue();
+
             playerIds.add(playerId);
             cardSuits.add(card.getSuit());
             cardRanks.add(card.getRank());
@@ -68,8 +69,8 @@ public class Game {
         return new CentralDeckMessage(clientId, id, playerIds, cardSuits, cardRanks);
     }
 
-    public boolean isEnded() {
-        return totalDeck.length()==0;
+    public boolean isEnded(ArrayList<Player> players) {
+        return players.get(0).getDeck().length() == 0 && players.get(1).getDeck().length() == 0;
     }
 
     public EndGameMessage endGame(String clientId, ArrayList<Player> players) {

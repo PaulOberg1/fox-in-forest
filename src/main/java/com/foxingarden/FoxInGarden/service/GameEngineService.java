@@ -54,12 +54,26 @@ public class GameEngineService {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();
         GameSession gameSession = sessions.get(gameId);
+        Game game = gameSession.getGame();
 
         gameSession.addPlayer(clientId);
         Player player = gameSession.getPlayerById(clientId);
         clientPlayerMappingService.registerClient(clientId, player);
+        game.setCurPlayer(player);
         int numPlayers = gameSession.getPlayers().size();
-        return new AddPlayerMessage(clientId,gameId,player.getDeck(),numPlayers); 
+        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards(),numPlayers); 
+    }
+
+    public AddPlayerMessage newGame(BaseEngineMessage baseEngineMessage) {
+        String clientId = baseEngineMessage.getClientId();
+        String gameId = baseEngineMessage.getGameId();
+        GameSession gameSession = new GameSession(gameId);
+        sessions.put(gameId,gameSession);
+
+        gameSession.addPlayer(clientId);
+        Player player = gameSession.getPlayerById(clientId);
+        clientPlayerMappingService.registerClient(clientId, player);
+        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards(),1);
     }
 
     public CurGameStatusMessage getCurGameStatus(BaseEngineMessage baseEngineMessage) {
@@ -68,7 +82,7 @@ public class GameEngineService {
         GameSession gameSession = sessions.get(gameId);
         Game game = gameSession.getGame();
 
-        return new CurGameStatusMessage(clientId, gameId, game.isEnded(), game.getCurPlayer());
+        return new CurGameStatusMessage(clientId, gameId, game.isEnded(gameSession.getPlayers()), game.getCurPlayer());
     }
 
     public EndGameMessage endGame(BaseEngineMessage baseEngineMessage) {

@@ -24,7 +24,7 @@ public class User {
     @NotEmpty(message = "user username required")
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     @NotEmpty(message = "user password required")
     private String password;
 

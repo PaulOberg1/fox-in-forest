@@ -26,15 +26,12 @@ class GameMenuController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    public void privateUpdate(String userId, String path, BaseMenuMessage dto) {
-        messagingTemplate.convertAndSendToUser(userId, path, dto);
-    }
     public void privateUpdate(String userId, String path) {
         messagingTemplate.convertAndSendToUser(userId, path, "{}");
     }
 
     @MessageMapping("/login")
-    public void login(AuthenticateUserMessage authenticateUserMessage) {
+    public void login(AuthenticateUserMessage authenticateUserMessage) { //add exception handling for username not existing
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
@@ -44,7 +41,7 @@ class GameMenuController{
     }
 
     @MessageMapping("/signup")
-    public void signup(AuthenticateUserMessage authenticateUserMessage) {
+    public void signup(AuthenticateUserMessage authenticateUserMessage) { //add exception handling for username already existing
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();

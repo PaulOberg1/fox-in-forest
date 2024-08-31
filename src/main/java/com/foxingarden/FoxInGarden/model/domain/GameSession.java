@@ -1,6 +1,7 @@
 package com.foxingarden.FoxInGarden.model.domain;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 import lombok.Getter;
@@ -13,14 +14,17 @@ public class GameSession {
     private Map<String,Player> idToPlayerMap;
     private ArrayList<Player> players;
 
-    public GameSession(String id, Game game) {
+    public GameSession(String id) {
         this.id = id;
-        this.game = game;
+        this.game = new Game(id);
+        this.idToPlayerMap = new HashMap<String,Player>();
+        this.players = new ArrayList<Player>();
     }
 
     public void addPlayer(String playerId) {
         Player player = game.addPlayer(playerId);
         idToPlayerMap.put(playerId,player);
+        players.add(player);
     }
 
     public Player getPlayerById(String playerId) {
@@ -33,11 +37,9 @@ public class GameSession {
 
     public Player getOtherPlayerById(String playerId) {
         Player otherPlayer;
-        if (players.get(0).getId()==playerId) 
-            otherPlayer = players.get(1);
-        else 
-            otherPlayer = players.get(0);
-        return otherPlayer;
+        if (players.get(0).getId().equals(playerId))
+            return players.get(1);
+        return players.get(0);
     }
 
 }

@@ -2,6 +2,8 @@ package com.foxingarden.FoxInGarden.model.domain;
 
 import java.util.List;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 public class Deck{
 
@@ -9,6 +11,10 @@ public class Deck{
 
     public Deck(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public List<Card> getCards() {
+        return cards;
     }
 
     public Card getCard(int i) {
@@ -22,9 +28,11 @@ public class Deck{
     }
 
     public Card playCard(String suit, int rank) {
-        for (Card card : cards) {
-            if (card.getRank()==rank && card.getSuit()==suit) {
-                cards.remove(card);
+        Iterator<Card> iterator = cards.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            if (card.getRank() == rank && card.getSuit().equals(suit)) {
+                iterator.remove();
                 return card;
             }
         }
@@ -40,10 +48,14 @@ public class Deck{
     }
 
     public Deck extractRandomCards(int n) {
-        if (n>=cards.size())
-            return this;
+        if (n>=cards.size()) {
+            Deck extractedDeck = new Deck(new ArrayList<>(cards));
+            cards.clear();
+            return extractedDeck;
+        }
         Collections.shuffle(cards);
-        List<Card> randomCards = cards.subList(0, n);
+        List<Card> randomCards = new ArrayList<>(cards.subList(0, n));
+        cards.subList(0,n).clear();
         return new Deck(randomCards);
     }
 }
