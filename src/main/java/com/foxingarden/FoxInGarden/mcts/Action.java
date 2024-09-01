@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class Action {
-    private Card playerCard;
-    private Card opCard;
+    private Card card;
+    private boolean isPlayer;
 
-    public Action(Card playerCard, Card opCard) {
-        this.playerCard = playerCard;
-        this.opCard = opCard;
+    public Action(Card card, boolean isPlayer) {
+        this.card = card;
+        this.isPlayer = isPlayer;
     }
 
 }
