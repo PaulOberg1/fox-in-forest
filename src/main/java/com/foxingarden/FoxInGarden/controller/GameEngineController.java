@@ -3,6 +3,7 @@ package com.foxingarden.FoxInGarden.controller;
 
 
 
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AIGameUpdate;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AddPlayerMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
@@ -71,5 +72,23 @@ class GameEngineController{
         AddPlayerMessage addPlayerMessage = gameEngineService.newGame(baseEngineMessage); //catch exception gameId already exists?
         String clientId = baseEngineMessage.getClientId();
         privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
+    }
+
+    @MessageMapping("/newAIGame")
+    public void newAIGame(BaseEngineMessage baseEngineMessage) { 
+        AIGameUpdate aIGameUpdate = gameEngineService.newAIGame(baseEngineMessage); //initialise player and AI with cards
+        String clientId = baseEngineMessage.getClientId(); 
+
+        privateUpdate(clientId,"/p2p/playerTurnAgainstAI",aIGameUpdate);
+    }
+
+    @MessageMapping("/playCardAgainstAI")
+    public void playCardAgainstAI(PlayCardMessage playCardMessage) {
+        String clientId = playCardMessage.getClientId();
+
+        AIGameUpdate aIGameUpdate = gameEngineService.playCardAgainstAI(playCardMessage);
+        aIGameUpdate = gameEngineService.playAICardAgainstPlayer(aIGameUpdate);
+
+        privateUpdate(clientId,"/p2p/playerTurnAgainstAI",aIGameUpdate);
     }
 }
