@@ -2,6 +2,9 @@ package com.foxingarden.FoxInGarden.mcts;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
+
+@Getter
 public class MCTS {
     private Node root;
 
@@ -20,11 +23,16 @@ public class MCTS {
         }
     }
 
-    int simulate(State state) {
+    public int simulate(State state) {
         while (!state.isTerminal()) {
-            ArrayList<Action> legalActions = state.getLegalActions();
-            int i = (int)Math.floor(Math.random()*legalActions.size());
-            Action action = legalActions.get(i);
+            ArrayList<Action> opActions = state.getLegalActions(false);
+            int i = (int)Math.floor(Math.random()*opActions.size());
+            Action action = opActions.get(i);
+            state.performAction(action);
+
+            ArrayList<Action> playerActions = state.getLegalActions(true);
+            i = (int)Math.floor(Math.random()*playerActions.size());
+            action = playerActions.get(i);
             state.performAction(action);
         }
         return state.getReward();
@@ -37,6 +45,10 @@ public class MCTS {
         node.getState().performAction(action);
         node.addChild(node.getState(),action);
         return node;
+    }
+
+    public Action getBestAction() {
+        return root.getBestAction();
     }
 
     public Node select(Node node) {
@@ -52,6 +64,10 @@ public class MCTS {
             node.updateReward(reward);
             node = node.getParent();
         }
+    }
+
+    public void updateRoot(Action action) {
+        this.root = root.getChildByAction(action);
     }
 }
 
