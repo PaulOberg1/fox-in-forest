@@ -16,10 +16,16 @@ public class Game {
     private Deck totalDeck;
     private ConcurrentHashMap<Card,String> centralCards = new ConcurrentHashMap<>();
     private Player curPlayer;
+    private Card decreeCard;
 
     public Game (String id) {
         this.id = id;
         this.totalDeck = generateTotalDeck();
+        this.decreeCard = null;
+    }
+
+    public Card extractDecreeCard() {
+        return totalDeck.extractRandomCards(1).getCard(0);
     }
 
     public Player addPlayer(String playerId) {
@@ -48,6 +54,7 @@ public class Game {
     }
 
     public void playCard(Player player, String suit, int rank) {
+        player.playCard(suit, rank);
         if (player.getId().equals(curPlayer.getId()) && player.playCard(suit, rank)) {
             centralCards.put(new Card(suit,rank), player.getId());
         }
