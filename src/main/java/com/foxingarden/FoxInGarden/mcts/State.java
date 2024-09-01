@@ -3,39 +3,92 @@ package com.foxingarden.FoxInGarden.mcts;
 import java.util.ArrayList;
 
 import com.foxingarden.FoxInGarden.model.domain.Card;
+import com.foxingarden.FoxInGarden.model.domain.Deck;
+import com.foxingarden.FoxInGarden.model.domain.Game;
 
 import lombok.Getter;
 
 @Getter
 public class State {
-    private int reward;
-    private ArrayList<Card> playerCards;
-    private ArrayList<Card> opCards;
+    private Deck playerDeck;
+    private Deck opDeck;
 
-    int playerScore;
-    int opScore;
+    private Card decreeCard;
+    private Card curPlayerCard;
+    private Card curOpCard;
 
-    public State(ArrayList<Card> playerCards, ArrayList<Card> opCards, int reward) {
-        this.playerCards = playerCards;
-        this.opCards = opCards;
-        this.reward = reward;
+    private int playerScore;
+    private int opScore;
+
+    public State(Deck playerDeck, Deck opDeck, Card decreeCard) {
+        this.playerDeck = playerDeck;
+        this.opDeck = opDeck;
+        this.decreeCard = decreeCard;
         this.playerScore = 0;
         this.opScore = 0;
     }
 
-    public void performAction(Action action) {
-        Card playerCard = action.getPlayerCard();
-        playerCards.remove(playerCard);
+    public int getReward() {
+        Game game = new Game("");
+        int playerPoints = game.computePointsFromScore(playerScore);
+        int opPoints = game.computePointsFromScore(opScore);
 
-        Card opCard = action.getOpCard();
-        opCards.remove(opCard);
+        return opPoints - playerPoints;
     }
 
-    public ArrayList<Action> getLegalActions() {
+    public void performAction(Action action) {
+        if (action.isPlayer()) {
+            Card playerCard = action.getCard();
+            playerDeck.remove(playerCard);
+            curPlayerCard = playerCard;
+        }
+        else {
+            Card opCard = action.getCard();
+            opDeck.remove(opCard);
+            curOpCard = opCard;
+        }
+        if (curPlayerCard!=null && curOpCard!=null) {
+            if (computeWinner(curPlayerCard,curOpCard,decreeCard)==0)
+                playerScore++;
+            else
+                opScore++;
+        }
+
+    }
+
+    public int computeWinner(Card card1, Card card2, Card decreeCard) {
+        String trumpSuit = decreeCard.getSuit();
+        if (card1.getSuit()==trumpSuit && card2.getSuit()==trumpSuit) {
+            if (card1.getRank()>card2.getRank())
+                return 0;
+            return 1;
+        }
+        else if (card1.getSuit()==trumpSuit)
+            return 0;
+        else if (card2.getSuit()==trumpSuit)
+            return 1;
+        else {
+            if (card1.getSuit()!=card2.getSuit())
+                return 0;
+            else if (card1.getRank()>card2.getRank())
+                return 0;
+            else
+                return 1;
+        }
+        
+    }
+
+    public ArrayList<Action> getLegalActions(boolean isPlayerTurn) {
         ArrayList<Action> legalActions = new ArrayList<>();
-        for (Card playerCard : playerCards) {
-            for (Card opCard : opCards) {
-                Action action = new Action(playerCard, opCard);
+        if (isPlayerTurn) {
+            for (Card playerCard : playerDeck.getCards()) {
+                Action action = new Action(playerCard,isPlayerTurn);
+                legalActions.add(action);
+            }
+        }
+        else {
+            for (Card opCard : opDeck.getCards()) {
+                Action action = new Action(opCard, isPlayerTurn);
                 legalActions.add(action);
             }
         }
@@ -43,7 +96,7 @@ public class State {
     }
 
     public boolean isTerminal() {
-        return (playerCards.size()==0 && opCards.size()==0);
+        return (playerDeck.length()==0 && opDeck.length()==0);
     }
 
 }
