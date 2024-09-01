@@ -1,19 +1,26 @@
 package com.foxingarden.FoxInGarden.model.domain;
 
-import java.util.List;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.ArrayList;
 
 public class Deck{
 
-    private List<Card> cards;
+    private ArrayList<Card> cards;
 
-    public Deck(List<Card> cards) {
+    public Deck(ArrayList<Card> cards) {
         this.cards = cards;
     }
 
-    public List<Card> getCards() {
+    public void remove(int i) {
+        cards.remove(i);
+    }
+
+    public void remove(Card card) {
+        cards.remove(card);
+    }
+
+    public ArrayList<Card> getCards() {
         return cards;
     }
 
@@ -54,7 +61,7 @@ public class Deck{
             return extractedDeck;
         }
         Collections.shuffle(cards);
-        List<Card> randomCards = new ArrayList<>(cards.subList(0, n));
+        ArrayList<Card> randomCards = new ArrayList<>(cards.subList(0, n));
         cards.subList(0,n).clear();
         return new Deck(randomCards);
     }
