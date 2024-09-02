@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.foxingarden.FoxInGarden.dto.game_menu_dtos.AuthenticateUserMessage;
 import com.foxingarden.FoxInGarden.dto.game_menu_dtos.BaseMenuMessage;
+import com.foxingarden.FoxInGarden.dto.game_alert_dtos.ServerAlertMessage;
 import com.foxingarden.FoxInGarden.service.GameMenuService;
 import com.foxingarden.FoxInGarden.service.UserService;
 
@@ -26,28 +27,42 @@ class GameMenuController{
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    public void privateUpdate(String userId, String path, ServerAlertMessage dto) {
+        messagingTemplate.convertAndSendToUser(userId, path, dto);
+    }
+
     public void privateUpdate(String userId, String path) {
         messagingTemplate.convertAndSendToUser(userId, path, "{}");
     }
 
     @MessageMapping("/login")
-    public void login(AuthenticateUserMessage authenticateUserMessage) { //add exception handling for username not existing
+    public void login(AuthenticateUserMessage authenticateUserMessage) {
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
-        long userId = userService.getUserId(username,password);
-        gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"/p2p/homePage");
+        try {
+            long userId = userService.getUserId(username,password);
+            gameMenuService.registerClientUserMapping(clientId, userId);
+            privateUpdate(clientId,"/p2p/homePage");
+        }
+        catch (Exception e) {
+            privateUpdate(clientId,"/p2p/serverAlertMessage",new ServerAlertMessage("Incorrect username/password"));
+        }
     }
 
     @MessageMapping("/signup")
-    public void signup(AuthenticateUserMessage authenticateUserMessage) { //add exception handling for username already existing
+    public void signup(AuthenticateUserMessage authenticateUserMessage) {
         String clientId = authenticateUserMessage.getClientId();
         String username = authenticateUserMessage.getUsername();
         String password = authenticateUserMessage.getPassword();
-        long userId = userService.createUser(username,password);
-        gameMenuService.registerClientUserMapping(clientId, userId);
-        privateUpdate(clientId,"/p2p/homePage");
+        try {
+            long userId = userService.createUser(username,password);
+            gameMenuService.registerClientUserMapping(clientId, userId);
+            privateUpdate(clientId,"/p2p/homePage");
+        }
+        catch (Exception e) {
+            privateUpdate(clientId,"/p2p/serverAlertMessage",new ServerAlertMessage("This username already exists"));
+        }
     }
 
     @MessageMapping("/connect")

@@ -50,7 +50,7 @@ public class GameEngineService {
         return game.getCentralDeckState(clientId);
     }
 
-    public AddPlayerMessage addPlayer(BaseEngineMessage baseEngineMessage) {
+    public AddPlayerMessage addPlayer(BaseEngineMessage baseEngineMessage) throws Exception {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();
         GameSession gameSession = sessions.get(gameId);
@@ -64,7 +64,7 @@ public class GameEngineService {
         return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards(),numPlayers); 
     }
 
-    public AddPlayerMessage newGame(BaseEngineMessage baseEngineMessage) {
+    public AddPlayerMessage newGame(BaseEngineMessage baseEngineMessage) throws Exception {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();
         GameSession gameSession = new GameSession(gameId);

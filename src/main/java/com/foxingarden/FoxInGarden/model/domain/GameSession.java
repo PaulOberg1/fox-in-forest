@@ -21,7 +21,9 @@ public class GameSession {
         this.players = new ArrayList<Player>();
     }
 
-    public void addPlayer(String playerId) {
+    public void addPlayer(String playerId) throws Exception {
+        if (players.size() >= 2)
+            throw new Exception("1");
         Player player = game.addPlayer(playerId);
         idToPlayerMap.put(playerId,player);
         players.add(player);
