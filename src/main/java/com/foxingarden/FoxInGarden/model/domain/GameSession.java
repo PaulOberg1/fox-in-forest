@@ -33,12 +33,7 @@ public class GameSession {
         return idToPlayerMap.get(playerId);
     }
 
-    public ArrayList<Player> getPlayers() {
-        return new ArrayList<>(idToPlayerMap.values());
-    }
-
     public Player getOtherPlayerById(String playerId) {
-        Player otherPlayer;
         if (players.get(0).getId().equals(playerId))
             return players.get(1);
         return players.get(0);

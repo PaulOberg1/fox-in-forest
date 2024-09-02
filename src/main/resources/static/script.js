@@ -40,6 +40,12 @@ stompClient.onConnect = function (frame) {
 	document.getElementById('homePage').classList.remove('hidden');
     });
 
+    stompClient.subscribe(`/user/${clientId}/p2p/playerTurnAgainstAI`, function (message) {
+        /*
+            player can now play a card, call playCardAginstAI(suit,rank)
+        */
+    });
+
 
     stompClient.subscribe(`/user/${clientId}/p2p/verifyConnect`, function (message) {
         /*
@@ -231,7 +237,15 @@ function newGame() {
 }
 function playCard(suit,rank) {
     stompClient.publish({
-        destination: "/app/playCard",
+        destination: "/app/playCardAgainstPlayer",
         body: JSON.stringify({clientId:clientId,gameId:gameId,suit:suit,rank:rank})
     }) //will result in call to broadcast/centralDeckUpdate, and broadcast/updatePlayerScores
+}
+
+function newAiGame() {
+
+}
+
+function playCardAginstAI(suit,rank) {
+    
 }
