@@ -25,6 +25,8 @@ let clientId = generateId(); //Sent with every request to uniquely identify send
 let gameId = null;
 let cardList = [];
 let selectedCardIndex = null;
+let wonPairs = 0;
+let lostPairs = 0;
 
 stompClient.onConnect = function (frame) {   
     stompClient.subscribe(`/user/${clientId}/p2p/homePage`, function (message) {
@@ -38,12 +40,6 @@ stompClient.onConnect = function (frame) {
 	document.getElementById('loginForm').classList.add('hidden');
 	document.getElementById('signupForm').classList.add('hidden');
 	document.getElementById('homePage').classList.remove('hidden');
-    });
-
-    stompClient.subscribe(`/user/${clientId}/p2p/playerTurnAgainstAI`, function (message) {
-        /*
-            player can now play a card, call playCardAginstAI(suit,rank)
-        */
     });
 
 
@@ -93,11 +89,18 @@ function newSubscriptions() {
         */
         document.getElementById('centralDeck').classList.remove('hidden');
         const data = JSON.parse(message.body);
+        console.log(data);
         playerIds = data.playerIds;
         cardSuits = data.cardSuits;
         cardRanks = data.cardRanks;
-        groupAndDisplayCards(playerIds, cardSuits, cardRanks);
+        winner = data.winner;
+        endRound = data.endRound;
+        displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound);
     })
+
+    stompClient.subscribe(`/broadcast/${gameId}/decreeCardUpdate`, function (message) {
+         document.getElementById('decreeCard').innerHTML = "";
+    }
 
     stompClient.subscribe(`/broadcast/${gameId}/endGame`, function (message) {
         /*
@@ -163,7 +166,7 @@ function playSelectedCard() {
     }
 }
 
-function groupAndDisplayCards(playerIds, cardSuits, cardRanks) {
+function displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound) {
     //clear previous cards
     document.getElementById('player1').innerHTML = '';
     document.getElementById('player2').innerHTML = '';
@@ -181,7 +184,16 @@ function groupAndDisplayCards(playerIds, cardSuits, cardRanks) {
         centralCard.alt = `${cardSuits[index]} ${cardRanks[index]}`;
         centralCard.style = 'margin: 0 8px; cursor: pointer;';
         playerSection.appendChild(centralCard);
-    });
+     })
+     if (endRound) {
+         
+         if (winner === clientId) {
+             wonPairs++;
+         }
+         else {
+             lostPairs++;
+         }
+     }
 }
 
 stompClient.onStompError = function (frame) {
@@ -237,15 +249,7 @@ function newGame() {
 }
 function playCard(suit,rank) {
     stompClient.publish({
-        destination: "/app/playCardAgainstPlayer",
+        destination: "/app/playCard",
         body: JSON.stringify({clientId:clientId,gameId:gameId,suit:suit,rank:rank})
     }) //will result in call to broadcast/centralDeckUpdate, and broadcast/updatePlayerScores
-}
-
-function newAiGame() {
-
-}
-
-function playCardAginstAI(suit,rank) {
-    
 }

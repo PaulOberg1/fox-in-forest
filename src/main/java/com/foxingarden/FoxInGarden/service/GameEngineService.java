@@ -54,10 +54,15 @@ public class GameEngineService {
         Player player = gameSession.getPlayerById(clientId);
         game.playCard(player, suit, rank);
 
-        Player nextPlayer = gameSession.getOtherPlayerById(clientId);
-        game.setCurPlayer(nextPlayer);
-
-        return game.getCentralDeckState(clientId);
+        CentralDeckMessage centralDeckMessage = game.getCentralDeckState(clientId);
+        if (centralDeckMessage.getEndRound()) {
+            game.setCurPlayer(gameSession.getPlayerById(centralDeckMessage.getWinner()));
+        }
+        else {
+            Player nextPlayer = gameSession.getOtherPlayerById(clientId);
+            game.setCurPlayer(nextPlayer);
+        }
+        return centralDeckMessage;
     }
 
     public AddPlayerMessage addPlayer(BaseEngineMessage baseEngineMessage) throws Exception {
@@ -70,8 +75,7 @@ public class GameEngineService {
         Player player = gameSession.getPlayerById(clientId);
         clientPlayerMappingService.registerClient(clientId, player);
         game.setCurPlayer(player);
-        int numPlayers = gameSession.getPlayers().size();
-        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards(),numPlayers); 
+        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards()); 
     }
 
     public AddPlayerMessage newGame(BaseEngineMessage baseEngineMessage) throws Exception {
@@ -83,7 +87,13 @@ public class GameEngineService {
         gameSession.addPlayer(clientId);
         Player player = gameSession.getPlayerById(clientId);
         clientPlayerMappingService.registerClient(clientId, player);
-        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards(),1);
+        return new AddPlayerMessage(clientId,gameId,player.getDeck().getCards());
+    }
+
+    public Card setDecreeCard(String gameId) {
+        GameSession gameSession = sessions.get(gameId);
+        Game game = gameSession.getGame();
+        return game.extractDecreeCard();
     }
 
     public CurGameStatusMessage getCurGameStatus(BaseEngineMessage baseEngineMessage) {

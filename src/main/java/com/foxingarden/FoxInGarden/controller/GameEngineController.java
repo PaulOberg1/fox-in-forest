@@ -1,15 +1,15 @@
 package com.foxingarden.FoxInGarden.controller;
 
 
-
-
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AIGameUpdate;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.AddPlayerMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CurGameStatusMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.EndGameMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.PlayCardMessage;
+import com.foxingarden.FoxInGarden.model.domain.Card;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.BaseEngineMessage;
+import com.foxingarden.FoxInGarden.dto.game_engine_dtos.DecreeCardMessage;
 import com.foxingarden.FoxInGarden.dto.game_alert_dtos.ServerAlertMessage;
 import com.foxingarden.FoxInGarden.service.GameEngineService;
 
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 
 
 @RestController
@@ -67,10 +66,13 @@ class GameEngineController{
     @MessageMapping("/addPlayer")
     public void addPlayer(BaseEngineMessage baseEngineMessage) {
         String clientId = baseEngineMessage.getClientId();
+        String gameId = baseEngineMessage.getGameId();
         try {
             AddPlayerMessage addPlayerMessage = gameEngineService.addPlayer(baseEngineMessage);
             privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
             privateUpdate(clientId, "/p2p/playerControlUpdate");
+            Card card = gameEngineService.setDecreeCard(gameId);
+            broadcastUpdate("/broadcast/" + gameId + "/decreeCardUpdate",new DecreeCardMessage(clientId,gameId,card.getSuit(),card.getRank()));
         }
         catch (Exception e) {
             if (e.getMessage().equals("1"))

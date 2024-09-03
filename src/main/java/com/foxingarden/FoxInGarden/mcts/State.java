@@ -56,26 +56,25 @@ public class State {
 
     }
 
-    public int computeWinner(Card card1, Card card2, Card decreeCard) {
+    public byte computeWinner(Card card1, Card card2, Card decreeCard) {
         String trumpSuit = decreeCard.getSuit();
-        if (card1.getSuit()==trumpSuit && card2.getSuit()==trumpSuit) {
+        if (card1.getSuit().equals(trumpSuit) && card2.getSuit().equals(trumpSuit)) {
             if (card1.getRank()>card2.getRank())
                 return 0;
             return 1;
         }
-        else if (card1.getSuit()==trumpSuit)
+        else if (card1.getSuit().equals(trumpSuit))
             return 0;
-        else if (card2.getSuit()==trumpSuit)
+        else if (card2.getSuit().equals(trumpSuit))
             return 1;
         else {
-            if (card1.getSuit()!=card2.getSuit())
+            if (!card1.getSuit().equals(card2.getSuit()))
                 return 0;
             else if (card1.getRank()>card2.getRank())
                 return 0;
             else
                 return 1;
         }
-        
     }
 
     public ArrayList<Action> getLegalActions(boolean isPlayerTurn) {
