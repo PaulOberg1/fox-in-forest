@@ -10,11 +10,9 @@ import lombok.Getter;
 @Getter
 public class AddPlayerMessage extends BaseEngineMessage {
     private List<Card> cardList;
-    private int numPlayers;
 
-    public AddPlayerMessage(String clientId, String gameId, List<Card> cardList, int numPlayers) {
+    public AddPlayerMessage(String clientId, String gameId, List<Card> cardList) {
         super(clientId,gameId);
         this.cardList = cardList;
-        this.numPlayers = numPlayers;
     }
 }

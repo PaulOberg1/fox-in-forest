@@ -1,7 +1,5 @@
 package com.foxingarden.FoxInGarden.model.domain;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.CentralDeckMessage;
 import com.foxingarden.FoxInGarden.dto.game_engine_dtos.EndGameMessage;
@@ -14,18 +12,22 @@ import lombok.Getter;
 public class Game {
     private String id;
     private Deck totalDeck;
-    private ConcurrentHashMap<Card,String> centralCards = new ConcurrentHashMap<>();
+    private ArrayList<Tuple<Player,Card>> centralCards;
     private Player curPlayer;
     private Card decreeCard;
+    private String roundWinner;
 
     public Game (String id) {
         this.id = id;
         this.totalDeck = generateTotalDeck();
         this.decreeCard = null;
+        this.centralCards = new ArrayList<>();
     }
 
     public Card extractDecreeCard() {
-        return totalDeck.extractRandomCards(1).getCard(0);
+        Card c = totalDeck.extractRandomCards(1).getCard(0);
+        decreeCard = c;
+        return c;
     }
 
     public Player addPlayer(String playerId) {
@@ -35,7 +37,7 @@ public class Game {
     }
 
     public Deck extractRandomDeck() {
-        return totalDeck.extractRandomCards(11);
+        return totalDeck.extractRandomCards(13);
     }
 
     public Deck generateTotalDeck() {
@@ -54,9 +56,17 @@ public class Game {
     }
 
     public void playCard(Player player, String suit, int rank) {
-        player.playCard(suit, rank);
+        if (centralCards.size() == 2) {
+            centralCards.clear();
+        }
         if (player.getId().equals(curPlayer.getId()) && player.playCard(suit, rank)) {
-            centralCards.put(new Card(suit,rank), player.getId());
+            centralCards.add(new Tuple<Player,Card>(player, new Card(suit,rank)));
+        }
+        if (centralCards.size() == 2) {
+            byte winner = computeWinner(centralCards.get(0).y, centralCards.get(1).y, decreeCard);
+            centralCards.get(winner).x.updateScore();
+            System.out.println(decreeCard);
+            roundWinner = centralCards.get(winner).x.getId();
         }
     }
 
@@ -65,15 +75,15 @@ public class Game {
         ArrayList<String> cardSuits = new ArrayList<>();
         ArrayList<Integer> cardRanks = new ArrayList<>();
 
-        for (Map.Entry<Card,String> entry : centralCards.entrySet()) {
-            Card card = entry.getKey();
-            String playerId = entry.getValue();
+        for (Tuple<Player,Card> entry : centralCards) {
+            Card card = entry.y;
+            String playerId = entry.x.getId();
 
             playerIds.add(playerId);
             cardSuits.add(card.getSuit());
             cardRanks.add(card.getRank());
         }
-        return new CentralDeckMessage(clientId, id, playerIds, cardSuits, cardRanks);
+        return new CentralDeckMessage(clientId, id, playerIds, cardSuits, cardRanks, roundWinner, centralCards.size() == 2);
     }
 
     public boolean isEnded(ArrayList<Player> players) {
@@ -106,4 +116,33 @@ public class Game {
             return 0;
     }
 
+    public byte computeWinner(Card card1, Card card2, Card decreeCard) {
+        String trumpSuit = decreeCard.getSuit();
+        if (card1.getSuit().equals(trumpSuit) && card2.getSuit().equals(trumpSuit)) {
+            if (card1.getRank()>card2.getRank())
+                return 0;
+            return 1;
+        }
+        else if (card1.getSuit().equals(trumpSuit))
+            return 0;
+        else if (card2.getSuit().equals(trumpSuit))
+            return 1;
+        else {
+            if (!card1.getSuit().equals(card2.getSuit()))
+                return 0;
+            else if (card1.getRank()>card2.getRank())
+                return 0;
+            else
+                return 1;
+        }
+    }
 }
+
+class Tuple<X, Y> { 
+    public X x; 
+    public Y y; 
+    public Tuple(X x, Y y) { 
+      this.x = x; 
+      this.y = y; 
+    } 
+  }
