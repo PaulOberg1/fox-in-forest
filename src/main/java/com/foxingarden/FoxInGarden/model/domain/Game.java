@@ -37,7 +37,7 @@ public class Game {
     }
 
     public Deck extractRandomDeck() {
-        return totalDeck.extractRandomCards(1); //change back to 13
+        return totalDeck.extractRandomCards(13); //change back to/keep at 13
     }
 
     public Deck generateTotalDeck() {

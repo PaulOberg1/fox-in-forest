@@ -2,15 +2,6 @@
 display: none;
 }
 
-#endGame {
-display: flex;
-justify-content: space-between;
-padding: 20px;
-margin-top: 20px;
-background-color: #f8f8f8;
-width: 50px;
-}
-
 .form-container {
 width: 100%;
 max-width: 400px;
@@ -68,7 +59,6 @@ justify-content: space-between;
 padding: 20px;
 margin-top: 20px;
 background-color: #f8f8f8;
-width: 20px;
 }
 
 .player-section {

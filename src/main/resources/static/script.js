@@ -116,7 +116,6 @@ function newSubscriptions() {
         */
         document.getElementById('endGame').classList.remove('hidden');
         const data = JSON.parse(message.body);
-        console.log(data);
         if (data.player1Id === clientId) {
             document.getElementById('player1score').innerText = data.player1Points;
             document.getElementById('player2score').innerText = data.player2Points;
@@ -213,12 +212,13 @@ function displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound) {
         playerSection.appendChild(centralCard);
      })
      if (endRound) {
-         
          if (winner === clientId) {
              wonPairs++;
+             document.getElementById('wonPairs').innerText = wonPairs;
          }
          else {
              lostPairs++;
+             document.getElementById('lostPairs').innerText = lostPairs;
          }
      }
 }
