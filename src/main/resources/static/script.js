@@ -27,6 +27,7 @@ let cardList = [];
 let selectedCardIndex = null;
 let wonPairs = 0;
 let lostPairs = 0;
+let firstCardSuitPlayed = null;
 
 stompClient.onConnect = function (frame) {   
     stompClient.subscribe(`/user/${clientId}/p2p/homePage`, function (message) {
@@ -78,7 +79,24 @@ stompClient.onConnect = function (frame) {
         */
         alert(JSON.parse(message.body).serverMessage);
     })
-    connect();
+
+    stompClient.subscribe(`/user/${clientId}/p2p/decreeCardUpdate`, function (message) {
+        /*
+            DecreeCardMessage DTO object returned
+            update display of decree card to display the card
+        */
+        const data = JSON.parse(message.body);
+ 
+        const cardElement = document.createElement('img');
+        cardElement.src = 'path/to/card/image.png'; //image path goes here
+        cardElement.alt = `${data.suit} ${data.rank}`;
+        cardElement.style = 'margin: 0 10px; cursor: pointer;';
+
+        decreeCardDiv = document.getElementById('decreeCard');
+        decreeCardDiv.appendChild(cardElement);
+    })
+
+   connect();
 };
 
 function newSubscriptions() {
@@ -89,18 +107,8 @@ function newSubscriptions() {
         */
         document.getElementById('centralDeck').classList.remove('hidden');
         const data = JSON.parse(message.body);
-        console.log(data);
-        playerIds = data.playerIds;
-        cardSuits = data.cardSuits;
-        cardRanks = data.cardRanks;
-        winner = data.winner;
-        endRound = data.endRound;
-        displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound);
+        displayCentralDeck(data.playerIds, data.cardSuits, data.cardRanks, data.winner, data.endRound);
     })
-
-    stompClient.subscribe(`/broadcast/${gameId}/decreeCardUpdate`, function (message) {
-         document.getElementById('decreeCard').innerHTML = "";
-    }
 
     stompClient.subscribe(`/broadcast/${gameId}/endGame`, function (message) {
         /*
@@ -108,6 +116,7 @@ function newSubscriptions() {
         */
         document.getElementById('endGame').classList.remove('hidden');
         const data = JSON.parse(message.body);
+        console.log(data);
         if (data.player1Id === clientId) {
             document.getElementById('player1score').innerText = data.player1Points;
             document.getElementById('player2score').innerText = data.player2Points;
@@ -154,22 +163,40 @@ function selectCard(index) {
 }
 
 function playSelectedCard() {
-    if (selectedCardIndex !== null) {
-        const selectedCard = cardList[selectedCardIndex];
-        playCard(selectedCard.suit, selectedCard.rank);
-        cardList.splice(selectedCardIndex, 1);//remove selected card
-        displayCards(); //refresh display
-        selectedCardIndex = null;
-        document.getElementById('playButton').classList.add('hidden');
-    } else {
-        alert('Please select a card to play.');
+    if (selectedCardIndex === null) {
+        alert('Please select a card to play');
+        return;
     }
+    const selectedCard = cardList[selectedCardIndex];
+    if (!isValidCard(selectedCard.suit)) {
+        alert('Please select a card that matches the opponents suit')
+        return;
+    }
+    playCard(selectedCard.suit, selectedCard.rank);
+    cardList.splice(selectedCardIndex, 1);//remove selected card
+    displayCards(); //refresh display
+    selectedCardIndex = null;
+    document.getElementById('playButton').classList.add('hidden');
+}
+
+function isValidCard(suit) {
+    if (document.getElementById('player2').innerHTML === '' || firstCardSuitPlayed === suit) {
+        return true;
+    }
+    for (let index = 0; index < cardList.length; index++) {
+        if (cardList[index].suit === firstCardSuitPlayed) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound) {
     //clear previous cards
     document.getElementById('player1').innerHTML = '';
     document.getElementById('player2').innerHTML = '';
+
+    firstCardSuitPlayed = cardSuits[0];
 
     playerIds.forEach((playerId, index) => {
         let playerSection;

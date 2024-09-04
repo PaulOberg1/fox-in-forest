@@ -51,7 +51,7 @@ class GameEngineController{
         broadcastUpdate("/broadcast/" + gameId + "/centralDeckUpdate", centralDeckMessage);
         
         CurGameStatusMessage curGameStatusMessage = gameEngineService.getCurGameStatus(new BaseEngineMessage(clientId, gameId)); //if this message is not sent to the client maybe it would be more efficient to return something else as the curGameStatus
-        broadcastUpdate("/broadcast/" + gameId + "/gameStatusUpdate", curGameStatusMessage);
+        //broadcastUpdate("/broadcast/" + gameId + "/gameStatusUpdate", curGameStatusMessage);
 
         if (curGameStatusMessage.isEnded()) {
             EndGameMessage endGameMessage = gameEngineService.endGame(new BaseEngineMessage(clientId, gameId));
@@ -72,7 +72,9 @@ class GameEngineController{
             privateUpdate(clientId,"/p2p/addPlayerUpdate",addPlayerMessage);
             privateUpdate(clientId, "/p2p/playerControlUpdate");
             Card card = gameEngineService.setDecreeCard(gameId);
-            broadcastUpdate("/broadcast/" + gameId + "/decreeCardUpdate",new DecreeCardMessage(clientId,gameId,card.getSuit(),card.getRank()));
+            String otherId = gameEngineService.getOtherPlayerId(clientId, gameId);
+            privateUpdate(clientId,"/p2p/decreeCardUpdate",new DecreeCardMessage(clientId,gameId,card.getSuit(),card.getRank()));
+            privateUpdate(otherId,"/p2p/decreeCardUpdate",new DecreeCardMessage(clientId,gameId,card.getSuit(),card.getRank()));
         }
         catch (Exception e) {
             if (e.getMessage().equals("1"))

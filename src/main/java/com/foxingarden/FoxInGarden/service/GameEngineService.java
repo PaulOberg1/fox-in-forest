@@ -65,6 +65,11 @@ public class GameEngineService {
         return centralDeckMessage;
     }
 
+    public String getOtherPlayerId(String clientId, String gameId) {
+        GameSession gameSession = sessions.get(gameId);
+        return gameSession.getOtherPlayerById(clientId).getId();
+    }
+
     public AddPlayerMessage addPlayer(BaseEngineMessage baseEngineMessage) throws Exception {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();

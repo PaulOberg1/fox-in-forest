@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class DecreeCardMessage extends BaseEngineMessage {
-    private String cardSuit;
-    private int cardRank;
+    private String suit;
+    private int rank;
 
-    public DecreeCardMessage(String clientId, String gameId, String cardSuit, int cardRank) {
+    public DecreeCardMessage(String clientId, String gameId, String suit, int rank) {
         super(clientId,gameId);
-        this.cardSuit = cardSuit;
-        this.cardRank = cardRank;
+        this.suit = suit;
+        this.rank = rank;
     }
 }

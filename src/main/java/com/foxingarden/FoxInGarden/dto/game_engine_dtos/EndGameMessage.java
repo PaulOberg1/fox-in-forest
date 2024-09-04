@@ -16,6 +16,6 @@ public class EndGameMessage extends BaseEngineMessage {
         this.player2Id = player2Id;
 
         this.player1Points = player1Points;
-        this.player1Points = player1Points;
+        this.player2Points = player2Points;
     }
 }
