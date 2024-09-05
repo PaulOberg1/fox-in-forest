@@ -121,6 +121,7 @@ public class GameEngineService {
         String clientId = baseEngineMessage.getClientId();
         String gameId = baseEngineMessage.getGameId();
         GameSession gameSession = sessions.get(gameId);
+        sessions.remove(gameId);
         Game game = gameSession.getGame();
         
         return game.endGame(clientId,gameSession.getPlayers());

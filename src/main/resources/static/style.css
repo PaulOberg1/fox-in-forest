@@ -1,5 +1,5 @@
 .hidden {
-display: none;
+display: none !important;
 }
 
 .form-container {
@@ -82,4 +82,49 @@ margin: 0 8px;
 cursor: pointer;
 width: 50px; /* Adjust as needed */
 height: 70px; /* Adjust as needed */
+}
+
+#pairs {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f8f8f8;
+}
+
+#pairs h5 {
+    width: 45%;
+    margin: 0;
+    text-align: center;
+}
+
+#pairs div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#endGame {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f8f8f8;
+}
+
+#endGame .player-section {
+    width: 45%;
+}
+
+#endGame h4 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#endGame div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
