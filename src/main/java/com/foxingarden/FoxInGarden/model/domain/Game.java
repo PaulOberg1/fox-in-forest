@@ -37,7 +37,7 @@ public class Game {
     }
 
     public Deck extractRandomDeck() {
-        return totalDeck.extractRandomCards(13);
+        return totalDeck.extractRandomCards(13); //change back to/keep at 13
     }
 
     public Deck generateTotalDeck() {
@@ -65,7 +65,6 @@ public class Game {
         if (centralCards.size() == 2) {
             byte winner = computeWinner(centralCards.get(0).y, centralCards.get(1).y, decreeCard);
             centralCards.get(winner).x.updateScore();
-            System.out.println(decreeCard);
             roundWinner = centralCards.get(winner).x.getId();
         }
     }
