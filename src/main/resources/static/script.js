@@ -93,7 +93,7 @@ stompClient.onConnect = function (frame) {
         const data = JSON.parse(message.body);
  
         const cardElement = document.createElement('img');
-        cardElement.src = 'path/to/card/image.png1'; //image path goes here
+        cardElement.src = `cards/${data.suit}${data.rank}.jpg`; //image path goes here
         cardElement.alt = `${data.suit} ${data.rank}`;
         cardElement.style = 'margin: 0 10px; cursor: pointer;';
 
@@ -138,7 +138,7 @@ function displayCards() {
 
     cardList.forEach((card, index) => {
         const cardElement = document.createElement('img');
-        cardElement.src = 'path/to/card/image.png'; // Image path goes here
+        cardElement.src = `cards/${card.suit}${card.rank}.jpg`; // Image path goes here
         cardElement.alt = `${card.suit} ${card.rank}`;
         cardElement.style = 'margin: 0 10px; cursor: pointer;';
         cardElement.draggable = true; // Make the card draggable
@@ -239,7 +239,7 @@ function displayCentralDeck(playerIds, cardSuits, cardRanks, winner, endRound) {
             playerSection = document.getElementById('player2');
         }
         const centralCard = document.createElement('img');
-        centralCard.src = 'path/to/card/image2.png'; //image path goes here
+        centralCard.src = `cards/${cardSuits[index]}${cardRanks[index]}.jpg`; //image path goes here
         centralCard.alt = `${cardSuits[index]} ${cardRanks[index]}`;
         centralCard.style = 'margin: 0 8px; cursor: pointer;';
         playerSection.appendChild(centralCard);
@@ -262,7 +262,7 @@ function displayOpponentCards(opponentCardNum) {
     opponentDiv.innerHTML = '';
     for (let index = 0; index < opponentCardNum; index++) {
         const card = document.createElement('img');
-        card.src = 'path/to/card/image3.png'; //image path goes here
+        card.src = 'cards/cardBack.jpg'; //image path goes here
         card.alt = 'Card';
         card.style = 'margin: 0 8px; cursor: pointer;';
         opponentDiv.appendChild(card);
