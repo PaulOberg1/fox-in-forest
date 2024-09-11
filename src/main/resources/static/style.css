@@ -1,87 +1,177 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f4f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Ensure the body covers the full viewport height */
+    display: flex;
+    flex-direction: column; /* Allow vertical stacking */
+    align-items: center; /* Center content horizontally */
+}
+
+h2, h4, h5 {
+    color: #2c3e50;
+}
+
 .hidden {
-display: none !important;
+    display: none !important;
 }
 
 .form-container {
-width: 100%;
-max-width: 400px;
-margin: 0 auto;
-padding: 20px;
-border: 1px solid #ccc;
-border-radius: 8px;
-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-box-sizing: border-box;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 .form-container h2 {
-text-align: center;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 .form-container input {
-width: calc(100% - 20px);
-padding: 10px;
-margin-top: 10px;
-border: 1px solid #ddd;
-border-radius: 4px;
-box-sizing: border-box;
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 .form-container button {
-width: 100%;
-padding: 10px;
-background-color: #28a745;
-color: white;
-border: none;
-border-radius: 5px;
-cursor: pointer;
+    width: 100%;
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 16px;
 }
 
 .form-container button:hover {
-background-color: #218838;
+    background-color: #2980b9;
 }
 
 .toggle-link {
-text-align: center;
-margin-top: 10px;
-display: block;
-cursor: pointer;
-color: #007bff;
+    text-align: center;
+    margin-top: 15px;
+    display: block;
+    cursor: pointer;
+    color: #3498db;
+    font-size: 14px;
+}
+
+#homePage {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#homePage h2 {
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+#newGame button, #joinForm button {
+    font-size: 18px;
+    padding: 12px 20px;
+    background-color: #e74c3c;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    margin-top: 10px;
+}
+
+#newGame button:hover, #joinForm button:hover {
+    background-color: #c0392b;
+}
+
+#cardDisplay {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#cardDisplay img {
+    width: 40px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+#cardDisplay img:hover {
+    transform: scale(1.1);
+}
+
+#centralDeck, #pairs, #endGame {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#centralDeck .player-section, #pairs div, #endGame .player-section {
+    width: 45%;
+}
+
+#endGame h5, #centralDeck h5 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #34495e;
+}
+
+#player1, #player2, #wonPairs, #lostPairs, #player1score, #player2score, #player2cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#player1 img, #player2 img, #wonPairs img, #lostPairs img, #player2cards img {
+    width: 40px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#playButton button {
+    background-color: #27ae60;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+}
+
+#playButton button:hover {
+    background-color: #229954;
+}
+
+.card-image {
+    width: 120px !important;
+    height: 160px !important;
+    margin: 0 8px;
+    cursor: pointer;
 }
 
 .selected {
-border: 2px solid blue;
-opacity: 0.8;
-}
-
-#centralDeck {
-display: flex;
-justify-content: space-between;
-padding: 20px;
-margin-top: 20px;
-background-color: #f8f8f8;
-}
-
-.player-section {
-width: 45%;
-}
-
-.player-section h4 {
-text-align: center;
-margin-bottom: 10px;
-}
-
-.player-cards {
-display: flex;
-justify-content: center;
-flex-wrap: wrap;
-gap: 8px;
-}
-
-.player-cards img {
-margin: 0 8px;
-cursor: pointer;
-width: 50px; /* Adjust as needed */
-height: 70px; /* Adjust as needed */
+    border: 2px solid blue;
+    opacity: 0.8;
 }
 
 #pairs {
@@ -89,42 +179,27 @@ height: 70px; /* Adjust as needed */
     justify-content: space-between;
     padding: 20px;
     margin-top: 20px;
-    background-color: #f8f8f8;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-#pairs h5 {
-    width: 45%;
+.pairs-container {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between the header and the score */
+    width: 45%; /* Ensure each container takes up appropriate space */
+}
+
+.pairs-container h5 {
     margin: 0;
-    text-align: center;
+    font-size: 18px;
+    color: #34495e;
 }
 
-#pairs div {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
+.pairs-container span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
 }
 
-#endGame {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    margin-top: 20px;
-    background-color: #f8f8f8;
-}
-
-#endGame .player-section {
-    width: 45%;
-}
-
-#endGame h4 {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-#endGame div {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
