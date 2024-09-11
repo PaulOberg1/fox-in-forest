@@ -2,6 +2,7 @@
 
 **Fox in the Forest** is a Java Spring-Boot implementation of the multiplayer card game, 
 
+![Screenshot](src/main/resources/static/image.jpg)
 
 ## Features:
 - Contains secure login system, storing credentials on a PostgreSQL database.
