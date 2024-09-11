@@ -1,6 +1,6 @@
 # Fox in the Forest
 
-**Fox in the Forest** is a Java Spring-Boot implementation of the multiplayer card game, 
+**Fox in the Forest** is a Java Spring-Boot implementation of the multiplayer card game, with an option to compete against an AI opponent.
 
 ![Screenshot](src/main/resources/static/image.jpg)
 
